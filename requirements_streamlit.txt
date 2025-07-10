@@ -1,0 +1,19 @@
+# Streamlit Deployment Requirements
+# Core dependencies for web interface
+
+# Web Framework
+streamlit>=1.15.0
+plotly>=5.11.0
+
+# Data Processing
+pandas>=1.5.0
+numpy>=1.21.0
+
+# Basic Dependencies
+python-dateutil>=2.8.0
+
+# Optional: AI Integration
+# anthropic>=0.3.0  # Uncomment if you have API key
+
+# Core LogNarrator dependencies
+# (Production components will be imported if available) 

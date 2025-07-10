@@ -16,6 +16,9 @@ from datetime import datetime
 try:
     from production_lognarrator import ProductionLogNarrator
     from database_manager import get_database_manager
+    from config_manager import get_config_manager
+    from temporal_analyzer import get_temporal_analyzer
+    from advanced_exporter import get_advanced_exporter
     PRODUCTION_MODE = True
 except ImportError:
     from parser import LogParser
@@ -229,6 +232,7 @@ def main():
                             tmp_file_path = tmp_file.name
                         
                         try:
+                            # Initialize production system with error handling
                             system = ProductionLogNarrator()
                             results = system.analyze_log_file(tmp_file_path)
                             
@@ -247,8 +251,28 @@ def main():
                                 st.sidebar.success("✅ Production analysis complete!")
                             else:
                                 st.sidebar.error(f"❌ Analysis failed: {results.get('error_message')}")
+                        except Exception as prod_error:
+                            st.sidebar.error(f"❌ Production system error: {prod_error}")
+                            # Fall back to basic mode
+                            st.sidebar.info("🔄 Falling back to basic analysis...")
+                            parser = LogParser()
+                            categorizer = LogCategorizer()
+                            summarizer = LogSummarizer(api_key if api_key else None)
+                            
+                            entries = parser.parse_text(log_text)
+                            if entries:
+                                categorized = categorizer.categorize_log_sequence(entries)
+                                summary = summarizer.generate_summary(categorized)
+                                
+                                st.session_state.log_data = categorized
+                                st.session_state.summary = summary
+                                st.session_state.analysis_complete = True
+                                st.sidebar.success("✅ Basic analysis complete!")
                         finally:
-                            os.unlink(tmp_file_path)
+                            try:
+                                os.unlink(tmp_file_path)
+                            except:
+                                pass
                     
                     else:
                         # Use basic system
