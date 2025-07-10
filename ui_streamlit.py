@@ -21,10 +21,20 @@ try:
     from advanced_exporter import get_advanced_exporter
     PRODUCTION_MODE = True
 except ImportError:
-    from parser import LogParser
-    from categorizer import LogCategorizer, Phase, RiskLevel
-    from summarizer import LogSummarizer
     PRODUCTION_MODE = False
+
+# Always import basic components for RiskLevel enum used in visualizations
+try:
+    from categorizer import Phase, RiskLevel
+except ImportError:
+    # Define fallback enums if basic imports fail
+    from enum import Enum
+    class Phase(Enum):
+        UNKNOWN = "Unknown"
+    class RiskLevel(Enum):
+        GREEN = "🟢"
+        YELLOW = "🟡"
+        RED = "🔴"
 
 
 def init_session_state():
@@ -283,7 +293,7 @@ def main():
                                     'key_events': [f"Processed {results.get('total_entries', 0)} entries in {results.get('processing_time', 0):.2f}s"],
                                     'risk_assessment': f"Risk Distribution: {results.get('risk_analysis', {}).get('distribution', {})}",
                                     'recommendations': [f"Processing speed: {results.get('performance_metrics', {}).get('entries_per_second', 0):.1f} entries/sec"],
-                                    'technical_details': f"Database session: {results.get('session_id', 'N/A')}\nFormat detected: {results.get('parsing_metrics', {}).get('format_detected', 'Unknown')}"
+                                    'technical_details': f"Database session: {results.get('session_id', 'N/A')}\nFormat detected: {getattr(results.get('parsing_metrics'), 'format_detected', 'Unknown')}"
                                 })()
                                 st.session_state.analysis_complete = True
                                 st.sidebar.success("✅ Production analysis complete!")
@@ -293,9 +303,17 @@ def main():
                             st.sidebar.error(f"❌ Production system error: {prod_error}")
                             # Fall back to basic mode
                             st.sidebar.info("🔄 Falling back to basic analysis...")
-                            parser = LogParser()
-                            categorizer = LogCategorizer()
-                            summarizer = LogSummarizer(api_key if api_key else None)
+                            try:
+                                from parser import LogParser
+                                from categorizer import LogCategorizer
+                                from summarizer import LogSummarizer
+                                
+                                parser = LogParser()
+                                categorizer = LogCategorizer()
+                                summarizer = LogSummarizer(api_key if api_key else None)
+                            except ImportError as import_error:
+                                st.sidebar.error(f"❌ Failed to import basic components: {import_error}")
+                                return
                             
                             entries = parser.parse_text(log_text)
                             if entries:
@@ -314,9 +332,17 @@ def main():
                     
                     else:
                         # Use basic system
-                        parser = LogParser()
-                        categorizer = LogCategorizer()
-                        summarizer = LogSummarizer(api_key if api_key else None)
+                        try:
+                            from parser import LogParser
+                            from categorizer import LogCategorizer
+                            from summarizer import LogSummarizer
+                            
+                            parser = LogParser()
+                            categorizer = LogCategorizer()
+                            summarizer = LogSummarizer(api_key if api_key else None)
+                        except ImportError as import_error:
+                            st.sidebar.error(f"❌ Failed to import basic components: {import_error}")
+                            return
                         
                         entries = parser.parse_text(log_text)
                         
@@ -530,9 +556,17 @@ Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
             
             with st.spinner("Processing sample data..."):
                 # Initialize components
-                parser = LogParser()
-                categorizer = LogCategorizer()
-                summarizer = LogSummarizer()
+                try:
+                    from parser import LogParser
+                    from categorizer import LogCategorizer
+                    from summarizer import LogSummarizer
+                    
+                    parser = LogParser()
+                    categorizer = LogCategorizer()
+                    summarizer = LogSummarizer()
+                except ImportError as import_error:
+                    st.error(f"❌ Failed to load demo components: {import_error}")
+                    return
                 
                 # Parse logs
                 entries = parser.parse_text(sample_log)
