@@ -1,0 +1,601 @@
+{
+  "metadata": {
+    "generated_at": "2025-07-10T15:33:59.885860",
+    "time_window_days": 30,
+    "export_type": "json",
+    "subsystem_filter": null
+  },
+  "analysis_history": [
+    {
+      "id": 5,
+      "file_path": "data/sample.log",
+      "file_hash": "f0ce471574a0176f867f6c5256da0320",
+      "analysis_timestamp": "2025-07-10 15:33:59.869931",
+      "total_entries": 33,
+      "risk_distribution": {
+        "GREEN": 31,
+        "YELLOW": 2,
+        "RED": 0
+      },
+      "phase_distribution": {
+        "Save": 7,
+        "Recovery": 2,
+        "Scan": 10,
+        "Unknown": 10,
+        "Position": 4
+      },
+      "subsystem_analysis": {
+        "Save": {
+          "entry_count": 7,
+          "risk_distribution": {
+            "GREEN": 7,
+            "YELLOW": 0,
+            "RED": 0
+          },
+          "avg_confidence": 0.3890476190476191,
+          "anomaly_count": 0
+        },
+        "AF": {
+          "entry_count": 5,
+          "risk_distribution": {
+            "GREEN": 3,
+            "YELLOW": 2,
+            "RED": 0
+          },
+          "avg_confidence": 0.4105833333333334,
+          "anomaly_count": 0
+        },
+        "SEM": {
+          "entry_count": 9,
+          "risk_distribution": {
+            "GREEN": 9,
+            "YELLOW": 0,
+            "RED": 0
+          },
+          "avg_confidence": 0.35715277777777776,
+          "anomaly_count": 1
+        },
+        "Positioning": {
+          "entry_count": 4,
+          "risk_distribution": {
+            "GREEN": 4,
+            "YELLOW": 0,
+            "RED": 0
+          },
+          "avg_confidence": 0.416875,
+          "anomaly_count": 0
+        },
+        "Sample": {
+          "entry_count": 2,
+          "risk_distribution": {
+            "GREEN": 2,
+            "YELLOW": 0,
+            "RED": 0
+          },
+          "avg_confidence": 0.3325,
+          "anomaly_count": 0
+        },
+        "Vacuum": {
+          "entry_count": 2,
+          "risk_distribution": {
+            "GREEN": 2,
+            "YELLOW": 0,
+            "RED": 0
+          },
+          "avg_confidence": 0.3325,
+          "anomaly_count": 0
+        },
+        "Control": {
+          "entry_count": 3,
+          "risk_distribution": {
+            "GREEN": 3,
+            "YELLOW": 0,
+            "RED": 0
+          },
+          "avg_confidence": 0.32833333333333337,
+          "anomaly_count": 0
+        },
+        "System": {
+          "entry_count": 1,
+          "risk_distribution": {
+            "GREEN": 1,
+            "YELLOW": 0,
+            "RED": 0
+          },
+          "avg_confidence": 0.3325,
+          "anomaly_count": 1
+        }
+      },
+      "overall_confidence": 0.3728977272727273,
+      "processing_time": 0.27199339866638184,
+      "format_detected": "standard",
+      "encoding_used": "utf-8",
+      "ai_summary": "\ud83e\udd16 AI LOG ANALYSIS NARRATIVE\n==================================================\n\n\ud83d\udcca OVERALL STATUS: \u26a0\ufe0f Completed with Warnings\n\n\ud83d\udcd6 WHAT HAPPENED:\nThe system initiated a save operation. with 2 warning(s). The system attempted recovery. and completed successfully.\n\n\ud83d\udd0d KEY EVENTS:\n  \u2022 \ud83d\udfe1 00:39:24.267: System Retry #1 Triggered\n  \u2022 \ud83d\udfe1 00:39:27.001: System Retry #2 Triggered\n\n\u26a0\ufe0f RISK ASSESSMENT:\nLOW RISK: 93.9% of events completed successfully. System operating normally.\n\n\ud83d\udca1 RECOMMENDATIONS:\n  \u2022 Check imaging parameters and sample conditions\n\n\ud83d\udd27 TECHNICAL DETAILS:\nDuration: 00:39:24.243 to 00:39:58.000\nSubsystems involved: AF, Control, Positioning, SEM, Sample, Save, System, Vacuum\nOperational phases: Position, Recovery, Save, Scan, Unknown\nTotal events: 33",
+      "user_notes": null
+    },
+    {
+      "id": 4,
+      "file_path": "data/sample.log",
+      "file_hash": "f0ce471574a0176f867f6c5256da0320",
+      "analysis_timestamp": "2025-07-10 15:33:46.844714",
+      "total_entries": 33,
+      "risk_distribution": {
+        "GREEN": 31,
+        "YELLOW": 2,
+        "RED": 0
+      },
+      "phase_distribution": {
+        "Save": 7,
+        "Recovery": 2,
+        "Scan": 10,
+        "Unknown": 10,
+        "Position": 4
+      },
+      "subsystem_analysis": {
+        "Save": {
+          "entry_count": 7,
+          "risk_distribution": {
+            "GREEN": 7,
+            "YELLOW": 0,
+            "RED": 0
+          },
+          "avg_confidence": 0.3890476190476191,
+          "anomaly_count": 0
+        },
+        "AF": {
+          "entry_count": 5,
+          "risk_distribution": {
+            "GREEN": 3,
+            "YELLOW": 2,
+            "RED": 0
+          },
+          "avg_confidence": 0.4105833333333334,
+          "anomaly_count": 0
+        },
+        "SEM": {
+          "entry_count": 9,
+          "risk_distribution": {
+            "GREEN": 9,
+            "YELLOW": 0,
+            "RED": 0
+          },
+          "avg_confidence": 0.35715277777777776,
+          "anomaly_count": 1
+        },
+        "Positioning": {
+          "entry_count": 4,
+          "risk_distribution": {
+            "GREEN": 4,
+            "YELLOW": 0,
+            "RED": 0
+          },
+          "avg_confidence": 0.416875,
+          "anomaly_count": 0
+        },
+        "Sample": {
+          "entry_count": 2,
+          "risk_distribution": {
+            "GREEN": 2,
+            "YELLOW": 0,
+            "RED": 0
+          },
+          "avg_confidence": 0.3325,
+          "anomaly_count": 0
+        },
+        "Vacuum": {
+          "entry_count": 2,
+          "risk_distribution": {
+            "GREEN": 2,
+            "YELLOW": 0,
+            "RED": 0
+          },
+          "avg_confidence": 0.3325,
+          "anomaly_count": 0
+        },
+        "Control": {
+          "entry_count": 3,
+          "risk_distribution": {
+            "GREEN": 3,
+            "YELLOW": 0,
+            "RED": 0
+          },
+          "avg_confidence": 0.32833333333333337,
+          "anomaly_count": 0
+        },
+        "System": {
+          "entry_count": 1,
+          "risk_distribution": {
+            "GREEN": 1,
+            "YELLOW": 0,
+            "RED": 0
+          },
+          "avg_confidence": 0.3325,
+          "anomaly_count": 1
+        }
+      },
+      "overall_confidence": 0.3728977272727273,
+      "processing_time": 0.2756326198577881,
+      "format_detected": "standard",
+      "encoding_used": "utf-8",
+      "ai_summary": "\ud83e\udd16 AI LOG ANALYSIS NARRATIVE\n==================================================\n\n\ud83d\udcca OVERALL STATUS: \u26a0\ufe0f Completed with Warnings\n\n\ud83d\udcd6 WHAT HAPPENED:\nThe system initiated a save operation. with 2 warning(s). The system attempted recovery. and completed successfully.\n\n\ud83d\udd0d KEY EVENTS:\n  \u2022 \ud83d\udfe1 00:39:24.267: System Retry #1 Triggered\n  \u2022 \ud83d\udfe1 00:39:27.001: System Retry #2 Triggered\n\n\u26a0\ufe0f RISK ASSESSMENT:\nLOW RISK: 93.9% of events completed successfully. System operating normally.\n\n\ud83d\udca1 RECOMMENDATIONS:\n  \u2022 Check imaging parameters and sample conditions\n\n\ud83d\udd27 TECHNICAL DETAILS:\nDuration: 00:39:24.243 to 00:39:58.000\nSubsystems involved: AF, Control, Positioning, SEM, Sample, Save, System, Vacuum\nOperational phases: Position, Recovery, Save, Scan, Unknown\nTotal events: 33",
+      "user_notes": null
+    },
+    {
+      "id": 3,
+      "file_path": "data/sample.log",
+      "file_hash": "f0ce471574a0176f867f6c5256da0320",
+      "analysis_timestamp": "2025-07-10 15:31:33.086530",
+      "total_entries": 33,
+      "risk_distribution": {
+        "GREEN": 31,
+        "YELLOW": 2,
+        "RED": 0
+      },
+      "phase_distribution": {
+        "Save": 7,
+        "Recovery": 2,
+        "Scan": 10,
+        "Unknown": 10,
+        "Position": 4
+      },
+      "subsystem_analysis": {
+        "Save": {
+          "entry_count": 7,
+          "risk_distribution": {
+            "GREEN": 7,
+            "YELLOW": 0,
+            "RED": 0
+          },
+          "avg_confidence": 0.3890476190476191,
+          "anomaly_count": 0
+        },
+        "AF": {
+          "entry_count": 5,
+          "risk_distribution": {
+            "GREEN": 3,
+            "YELLOW": 2,
+            "RED": 0
+          },
+          "avg_confidence": 0.4105833333333334,
+          "anomaly_count": 0
+        },
+        "SEM": {
+          "entry_count": 9,
+          "risk_distribution": {
+            "GREEN": 9,
+            "YELLOW": 0,
+            "RED": 0
+          },
+          "avg_confidence": 0.35715277777777776,
+          "anomaly_count": 1
+        },
+        "Positioning": {
+          "entry_count": 4,
+          "risk_distribution": {
+            "GREEN": 4,
+            "YELLOW": 0,
+            "RED": 0
+          },
+          "avg_confidence": 0.416875,
+          "anomaly_count": 0
+        },
+        "Sample": {
+          "entry_count": 2,
+          "risk_distribution": {
+            "GREEN": 2,
+            "YELLOW": 0,
+            "RED": 0
+          },
+          "avg_confidence": 0.3325,
+          "anomaly_count": 0
+        },
+        "Vacuum": {
+          "entry_count": 2,
+          "risk_distribution": {
+            "GREEN": 2,
+            "YELLOW": 0,
+            "RED": 0
+          },
+          "avg_confidence": 0.3325,
+          "anomaly_count": 0
+        },
+        "Control": {
+          "entry_count": 3,
+          "risk_distribution": {
+            "GREEN": 3,
+            "YELLOW": 0,
+            "RED": 0
+          },
+          "avg_confidence": 0.32833333333333337,
+          "anomaly_count": 0
+        },
+        "System": {
+          "entry_count": 1,
+          "risk_distribution": {
+            "GREEN": 1,
+            "YELLOW": 0,
+            "RED": 0
+          },
+          "avg_confidence": 0.3325,
+          "anomaly_count": 1
+        }
+      },
+      "overall_confidence": 0.3728977272727273,
+      "processing_time": 0.2675011157989502,
+      "format_detected": "standard",
+      "encoding_used": "utf-8",
+      "ai_summary": "\ud83e\udd16 AI LOG ANALYSIS NARRATIVE\n==================================================\n\n\ud83d\udcca OVERALL STATUS: \u26a0\ufe0f Completed with Warnings\n\n\ud83d\udcd6 WHAT HAPPENED:\nThe system initiated a save operation. with 2 warning(s). The system attempted recovery. and completed successfully.\n\n\ud83d\udd0d KEY EVENTS:\n  \u2022 \ud83d\udfe1 00:39:24.267: System Retry #1 Triggered\n  \u2022 \ud83d\udfe1 00:39:27.001: System Retry #2 Triggered\n\n\u26a0\ufe0f RISK ASSESSMENT:\nLOW RISK: 93.9% of events completed successfully. System operating normally.\n\n\ud83d\udca1 RECOMMENDATIONS:\n  \u2022 Check imaging parameters and sample conditions\n\n\ud83d\udd27 TECHNICAL DETAILS:\nDuration: 00:39:24.243 to 00:39:58.000\nSubsystems involved: AF, Control, Positioning, SEM, Sample, Save, System, Vacuum\nOperational phases: Position, Recovery, Save, Scan, Unknown\nTotal events: 33",
+      "user_notes": null
+    },
+    {
+      "id": 2,
+      "file_path": "data/sample.log",
+      "file_hash": "f0ce471574a0176f867f6c5256da0320",
+      "analysis_timestamp": "2025-07-10 15:31:07.481774",
+      "total_entries": 33,
+      "risk_distribution": {
+        "GREEN": 31,
+        "YELLOW": 2,
+        "RED": 0
+      },
+      "phase_distribution": {
+        "Save": 7,
+        "Recovery": 2,
+        "Scan": 10,
+        "Unknown": 10,
+        "Position": 4
+      },
+      "subsystem_analysis": {
+        "Save": {
+          "entry_count": 7,
+          "risk_distribution": {
+            "GREEN": 7,
+            "YELLOW": 0,
+            "RED": 0
+          },
+          "avg_confidence": 0.3890476190476191,
+          "anomaly_count": 0
+        },
+        "AF": {
+          "entry_count": 5,
+          "risk_distribution": {
+            "GREEN": 3,
+            "YELLOW": 2,
+            "RED": 0
+          },
+          "avg_confidence": 0.4105833333333334,
+          "anomaly_count": 0
+        },
+        "SEM": {
+          "entry_count": 9,
+          "risk_distribution": {
+            "GREEN": 9,
+            "YELLOW": 0,
+            "RED": 0
+          },
+          "avg_confidence": 0.35715277777777776,
+          "anomaly_count": 1
+        },
+        "Positioning": {
+          "entry_count": 4,
+          "risk_distribution": {
+            "GREEN": 4,
+            "YELLOW": 0,
+            "RED": 0
+          },
+          "avg_confidence": 0.416875,
+          "anomaly_count": 0
+        },
+        "Sample": {
+          "entry_count": 2,
+          "risk_distribution": {
+            "GREEN": 2,
+            "YELLOW": 0,
+            "RED": 0
+          },
+          "avg_confidence": 0.3325,
+          "anomaly_count": 0
+        },
+        "Vacuum": {
+          "entry_count": 2,
+          "risk_distribution": {
+            "GREEN": 2,
+            "YELLOW": 0,
+            "RED": 0
+          },
+          "avg_confidence": 0.3325,
+          "anomaly_count": 0
+        },
+        "Control": {
+          "entry_count": 3,
+          "risk_distribution": {
+            "GREEN": 3,
+            "YELLOW": 0,
+            "RED": 0
+          },
+          "avg_confidence": 0.32833333333333337,
+          "anomaly_count": 0
+        },
+        "System": {
+          "entry_count": 1,
+          "risk_distribution": {
+            "GREEN": 1,
+            "YELLOW": 0,
+            "RED": 0
+          },
+          "avg_confidence": 0.3325,
+          "anomaly_count": 1
+        }
+      },
+      "overall_confidence": 0.3728977272727273,
+      "processing_time": 0.25499749183654785,
+      "format_detected": "standard",
+      "encoding_used": "utf-8",
+      "ai_summary": "\ud83e\udd16 AI LOG ANALYSIS NARRATIVE\n==================================================\n\n\ud83d\udcca OVERALL STATUS: \u26a0\ufe0f Completed with Warnings\n\n\ud83d\udcd6 WHAT HAPPENED:\nThe system initiated a save operation. with 2 warning(s). The system attempted recovery. and completed successfully.\n\n\ud83d\udd0d KEY EVENTS:\n  \u2022 \ud83d\udfe1 00:39:24.267: System Retry #1 Triggered\n  \u2022 \ud83d\udfe1 00:39:27.001: System Retry #2 Triggered\n\n\u26a0\ufe0f RISK ASSESSMENT:\nLOW RISK: 93.9% of events completed successfully. System operating normally.\n\n\ud83d\udca1 RECOMMENDATIONS:\n  \u2022 Check imaging parameters and sample conditions\n\n\ud83d\udd27 TECHNICAL DETAILS:\nDuration: 00:39:24.243 to 00:39:58.000\nSubsystems involved: AF, Control, Positioning, SEM, Sample, Save, System, Vacuum\nOperational phases: Position, Recovery, Save, Scan, Unknown\nTotal events: 33",
+      "user_notes": null
+    },
+    {
+      "id": 1,
+      "file_path": "data/sample.log",
+      "file_hash": "f0ce471574a0176f867f6c5256da0320",
+      "analysis_timestamp": "2025-07-10 15:30:43.462162",
+      "total_entries": 33,
+      "risk_distribution": {
+        "GREEN": 31,
+        "YELLOW": 2,
+        "RED": 0
+      },
+      "phase_distribution": {
+        "Save": 7,
+        "Recovery": 2,
+        "Scan": 10,
+        "Unknown": 10,
+        "Position": 4
+      },
+      "subsystem_analysis": {
+        "Save": {
+          "entry_count": 7,
+          "risk_distribution": {
+            "GREEN": 7,
+            "YELLOW": 0,
+            "RED": 0
+          },
+          "avg_confidence": 0.4783333333333334,
+          "anomaly_count": 0
+        },
+        "AF": {
+          "entry_count": 5,
+          "risk_distribution": {
+            "GREEN": 3,
+            "YELLOW": 2,
+            "RED": 0
+          },
+          "avg_confidence": 0.48558333333333337,
+          "anomaly_count": 0
+        },
+        "SEM": {
+          "entry_count": 9,
+          "risk_distribution": {
+            "GREEN": 9,
+            "YELLOW": 0,
+            "RED": 0
+          },
+          "avg_confidence": 0.454375,
+          "anomaly_count": 1
+        },
+        "Positioning": {
+          "entry_count": 4,
+          "risk_distribution": {
+            "GREEN": 4,
+            "YELLOW": 0,
+            "RED": 0
+          },
+          "avg_confidence": 0.510625,
+          "anomaly_count": 0
+        },
+        "Sample": {
+          "entry_count": 2,
+          "risk_distribution": {
+            "GREEN": 2,
+            "YELLOW": 0,
+            "RED": 0
+          },
+          "avg_confidence": 0.4575,
+          "anomaly_count": 0
+        },
+        "Vacuum": {
+          "entry_count": 2,
+          "risk_distribution": {
+            "GREEN": 2,
+            "YELLOW": 0,
+            "RED": 0
+          },
+          "avg_confidence": 0.4575,
+          "anomaly_count": 0
+        },
+        "Control": {
+          "entry_count": 3,
+          "risk_distribution": {
+            "GREEN": 3,
+            "YELLOW": 0,
+            "RED": 0
+          },
+          "avg_confidence": 0.45333333333333337,
+          "anomaly_count": 0
+        },
+        "System": {
+          "entry_count": 1,
+          "risk_distribution": {
+            "GREEN": 1,
+            "YELLOW": 0,
+            "RED": 0
+          },
+          "avg_confidence": 0.4575,
+          "anomaly_count": 1
+        }
+      },
+      "overall_confidence": 0.4713825757575758,
+      "processing_time": 0.2635025978088379,
+      "format_detected": "standard",
+      "encoding_used": "utf-8",
+      "ai_summary": "\ud83e\udd16 AI LOG ANALYSIS NARRATIVE\n==================================================\n\n\ud83d\udcca OVERALL STATUS: \u26a0\ufe0f Completed with Warnings\n\n\ud83d\udcd6 WHAT HAPPENED:\nThe system initiated a save operation. with 2 warning(s). The system attempted recovery. and completed successfully.\n\n\ud83d\udd0d KEY EVENTS:\n  \u2022 \ud83d\udfe1 00:39:24.267: System Retry #1 Triggered\n  \u2022 \ud83d\udfe1 00:39:27.001: System Retry #2 Triggered\n\n\u26a0\ufe0f RISK ASSESSMENT:\nLOW RISK: 93.9% of events completed successfully. System operating normally.\n\n\ud83d\udca1 RECOMMENDATIONS:\n  \u2022 Check imaging parameters and sample conditions\n\n\ud83d\udd27 TECHNICAL DETAILS:\nDuration: 00:39:24.243 to 00:39:58.000\nSubsystems involved: AF, Control, Positioning, SEM, Sample, Save, System, Vacuum\nOperational phases: Position, Recovery, Save, Scan, Unknown\nTotal events: 33",
+      "user_notes": null
+    }
+  ],
+  "trend_analysis": {
+    "analysis_period": "30 days",
+    "generated_at": "2025-07-10T15:33:59.886408",
+    "trend_summary": {
+      "total_subsystems": 8,
+      "trend_distribution": {
+        "improving": 0,
+        "degrading": 0,
+        "stable": 0,
+        "volatile": 0,
+        "unknown": 8
+      },
+      "systems_with_alerts": 0
+    },
+    "correlation_summary": {
+      "total_correlations_found": 0,
+      "strong_correlations": 0,
+      "potential_causalities": 0
+    },
+    "anomaly_summary": {
+      "total_anomalies": 0,
+      "critical_anomalies": 0,
+      "anomaly_types": []
+    },
+    "degradation_summary": {
+      "total_alerts": 0,
+      "critical_alerts": 0,
+      "affected_subsystems": []
+    }
+  },
+  "correlation_analysis": [],
+  "anomaly_data": [],
+  "performance_metrics": {},
+  "summary_stats": {
+    "total_sessions": 5,
+    "avg_confidence": 0.392594696969697,
+    "total_entries": 165,
+    "risk_distribution": {
+      "GREEN": 155,
+      "YELLOW": 10,
+      "RED": 0
+    },
+    "phase_distribution": {
+      "Save": 35,
+      "Recovery": 10,
+      "Scan": 50,
+      "Unknown": 50,
+      "Position": 20
+    },
+    "processing_performance": {
+      "avg_time": 0.2667254447937012,
+      "min_time": 0.25499749183654785,
+      "max_time": 0.2756326198577881
+    },
+    "top_subsystems": {}
+  }
+}

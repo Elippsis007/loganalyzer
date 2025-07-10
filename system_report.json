@@ -1,0 +1,122 @@
+{
+  "generated_at": "2025-07-10T15:34:13.140497",
+  "time_window_days": 7,
+  "system_overview": {
+    "total_sessions": 5,
+    "total_entries_processed": 165,
+    "avg_processing_time": 0.2667254447937012,
+    "avg_confidence": 0.392594696969697,
+    "production_features_active": true
+  },
+  "temporal_analysis": {
+    "analysis_period": "7 days",
+    "generated_at": "2025-07-10T15:34:13.138271",
+    "trend_summary": {
+      "total_subsystems": 0,
+      "trend_distribution": {
+        "improving": 0,
+        "degrading": 0,
+        "stable": 0,
+        "volatile": 0
+      },
+      "systems_with_alerts": 0
+    },
+    "correlation_summary": {
+      "total_correlations_found": 0,
+      "strong_correlations": 0,
+      "potential_causalities": 0
+    },
+    "anomaly_summary": {
+      "total_anomalies": 0,
+      "critical_anomalies": 0,
+      "anomaly_types": []
+    },
+    "degradation_summary": {
+      "total_alerts": 0,
+      "critical_alerts": 0,
+      "affected_subsystems": []
+    }
+  },
+  "database_statistics": {
+    "analysis_sessions_count": 5,
+    "log_entries_count": 33,
+    "pattern_performance_count": 0,
+    "user_feedback_count": 0,
+    "trend_data_count": 0,
+    "system_metrics_count": 0,
+    "database_size_bytes": 139264,
+    "recent_sessions": 5,
+    "avg_pattern_confidence": 0,
+    "total_patterns": 0,
+    "total_pattern_successes": 0,
+    "total_pattern_failures": 0
+  },
+  "configuration_status": {
+    "total_rules": 7,
+    "categories": [
+      "alerts",
+      "analysis",
+      "performance"
+    ],
+    "last_modified": null,
+    "requires_restart": [],
+    "validation_errors": {}
+  },
+  "session_statistics": {
+    "session_start": "2025-07-10T15:34:13.137258",
+    "runtime_seconds": 0.003258,
+    "files_processed": 0,
+    "total_entries": 0,
+    "total_processing_time": 0.0,
+    "avg_confidence": 0.0,
+    "avg_entries_per_file": 0,
+    "system_performance": {
+      "entries_per_second": 0.0,
+      "files_per_hour": 0.0
+    }
+  },
+  "export_capabilities": {
+    "pdf": true,
+    "excel": true,
+    "charts": true,
+    "json": true,
+    "csv": true
+  },
+  "recent_activity": [
+    {
+      "date": "2025-07-10T15:33:59.869931",
+      "file": "sample.log",
+      "entries": 33,
+      "confidence": 0.3728977272727273,
+      "time": 0.27199339866638184
+    },
+    {
+      "date": "2025-07-10T15:33:46.844714",
+      "file": "sample.log",
+      "entries": 33,
+      "confidence": 0.3728977272727273,
+      "time": 0.2756326198577881
+    },
+    {
+      "date": "2025-07-10T15:31:33.086530",
+      "file": "sample.log",
+      "entries": 33,
+      "confidence": 0.3728977272727273,
+      "time": 0.2675011157989502
+    },
+    {
+      "date": "2025-07-10T15:31:07.481774",
+      "file": "sample.log",
+      "entries": 33,
+      "confidence": 0.3728977272727273,
+      "time": 0.25499749183654785
+    },
+    {
+      "date": "2025-07-10T15:30:43.462162",
+      "file": "sample.log",
+      "entries": 33,
+      "confidence": 0.4713825757575758,
+      "time": 0.2635025978088379
+    }
+  ]
+}

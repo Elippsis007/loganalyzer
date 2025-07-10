@@ -1,0 +1,68 @@
+# Production LogNarrator AI Requirements
+# Core dependencies
+pandas>=1.5.0
+numpy>=1.21.0
+python-dateutil>=2.8.0
+pytz>=2022.1
+
+# Machine Learning and Statistics
+scipy>=1.9.0
+scikit-learn>=1.1.0
+
+# Database
+sqlite3  # Built-in with Python
+
+# Configuration Management
+PyYAML>=6.0
+
+# Export Capabilities
+reportlab>=3.6.0  # PDF generation
+xlsxwriter>=3.0.0  # Excel export
+matplotlib>=3.5.0  # Charts and visualization
+seaborn>=0.11.0  # Statistical visualization
+
+# Web Interface (optional)
+streamlit>=1.15.0
+plotly>=5.11.0
+
+# API and Integration (optional)
+fastapi>=0.85.0
+uvicorn>=0.19.0
+requests>=2.28.0
+
+# Performance and Monitoring
+psutil>=5.9.0  # System monitoring
+memory-profiler>=0.60.0  # Memory profiling
+
+# Development and Testing
+pytest>=7.0.0
+pytest-cov>=4.0.0
+black>=22.0.0  # Code formatting
+flake8>=5.0.0  # Code linting
+
+# Logging and Utilities
+colorlog>=6.7.0  # Colored logging
+tqdm>=4.64.0  # Progress bars
+click>=8.1.0  # CLI utilities
+
+# Optional: Advanced Analytics
+# Uncomment if you need advanced time series analysis
+# statsmodels>=0.13.0
+# fbprophet>=0.7.1
+
+# Optional: Database Alternatives
+# Uncomment if you prefer PostgreSQL over SQLite
+# psycopg2-binary>=2.9.0
+# SQLAlchemy>=1.4.0
+
+# Optional: Advanced ML Features
+# Uncomment for more sophisticated ML capabilities
+# tensorflow>=2.10.0
+# torch>=1.12.0
+# transformers>=4.21.0
+
+# Optional: Cloud Integration
+# Uncomment for AWS/Azure/GCP integration
+# boto3>=1.26.0
+# azure-storage-blob>=12.13.0
+# google-cloud-storage>=2.5.0 
