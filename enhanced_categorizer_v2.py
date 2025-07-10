@@ -56,6 +56,60 @@ class ProductionCategorizedLogEntry:
     anomaly_indicators: List[str]
     processing_time: float
     entry_hash: str  # Unique identifier for tracking
+    
+    @property
+    def confidence(self) -> float:
+        """Backward compatibility: return overall confidence as simple float"""
+        return self.confidence_metrics.overall_confidence
+    
+    @property
+    def explanation(self) -> str:
+        """Generate explanation for UI compatibility"""
+        return self._generate_explanation()
+    
+    def _generate_explanation(self) -> str:
+        """Generate a detailed explanation based on production analysis"""
+        base_explanations = {
+            (Phase.INIT, RiskLevel.GREEN): "System initialization proceeding normally",
+            (Phase.POSITION, RiskLevel.GREEN): "Positioning operation successful",
+            (Phase.SCAN, RiskLevel.GREEN): "Scanning/imaging operation completed successfully",
+            (Phase.SAVE, RiskLevel.GREEN): "Data save operation completed successfully",
+            (Phase.ERROR, RiskLevel.RED): "Critical error detected - operation failed",
+            (Phase.RECOVERY, RiskLevel.YELLOW): "System attempting recovery procedures",
+            (Phase.RECOVERY, RiskLevel.GREEN): "Recovery operation successful",
+            (Phase.ABORT, RiskLevel.RED): "Operation aborted or cancelled",
+            (Phase.UNKNOWN, RiskLevel.GREEN): "Normal operation detected",
+            (Phase.UNKNOWN, RiskLevel.YELLOW): "Unknown operation with warning indicators",
+            (Phase.UNKNOWN, RiskLevel.RED): "Unknown operation with error indicators",
+        }
+        
+        base_explanation = base_explanations.get(
+            (self.phase, self.risk_level), 
+            f"{self.phase.value} operation with {self.risk_level.value} risk level"
+        )
+        
+        # Add confidence information
+        confidence_text = f" (Confidence: {self.confidence:.1%})"
+        
+        # Add temporal context if available
+        context_text = ""
+        if self.temporal_context:
+            if "retry_sequence" in self.temporal_context:
+                context_text = " - Part of retry sequence"
+            elif "error_recovery" in self.temporal_context:
+                context_text = " - Following error recovery pattern"
+            elif "cascading_failure" in self.temporal_context:
+                context_text = " - May be part of cascading failure"
+        
+        # Add anomaly indicators
+        anomaly_text = ""
+        if self.anomaly_indicators:
+            if len(self.anomaly_indicators) == 1:
+                anomaly_text = f" - Anomaly detected: {self.anomaly_indicators[0]}"
+            else:
+                anomaly_text = f" - Multiple anomalies detected ({len(self.anomaly_indicators)})"
+        
+        return f"{base_explanation}{confidence_text}{context_text}{anomaly_text}"
 
 
 class ProductionLogCategorizer:

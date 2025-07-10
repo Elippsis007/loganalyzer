@@ -39,15 +39,25 @@ def init_session_state():
 
 def create_risk_pie_chart(categorized_entries):
     """Create a pie chart showing risk distribution"""
+    if not categorized_entries:
+        # Return empty chart if no data
+        fig = px.pie(values=[1], names=["No Data"], title="Risk Level Distribution")
+        return fig
+    
     risk_counts = {"🟢 Green": 0, "🟡 Yellow": 0, "🔴 Red": 0}
     
-    for entry in categorized_entries:
-        if entry.risk_level == RiskLevel.GREEN:
-            risk_counts["🟢 Green"] += 1
-        elif entry.risk_level == RiskLevel.YELLOW:
-            risk_counts["🟡 Yellow"] += 1
-        elif entry.risk_level == RiskLevel.RED:
-            risk_counts["🔴 Red"] += 1
+    try:
+        for entry in categorized_entries:
+            if hasattr(entry, 'risk_level'):
+                if entry.risk_level == RiskLevel.GREEN:
+                    risk_counts["🟢 Green"] += 1
+                elif entry.risk_level == RiskLevel.YELLOW:
+                    risk_counts["🟡 Yellow"] += 1
+                elif entry.risk_level == RiskLevel.RED:
+                    risk_counts["🔴 Red"] += 1
+    except Exception as e:
+        st.error(f"Error creating risk chart: {e}")
+        return px.pie(values=[1], names=["Error"], title="Risk Level Distribution")
     
     fig = px.pie(
         values=list(risk_counts.values()),
@@ -64,17 +74,29 @@ def create_risk_pie_chart(categorized_entries):
 
 def create_phase_timeline(categorized_entries):
     """Create a timeline showing phases over time"""
+    if not categorized_entries:
+        # Return empty chart if no data
+        return px.scatter(title="Phase Timeline - No Data")
+    
     timeline_data = []
     
-    for i, entry in enumerate(categorized_entries):
-        timeline_data.append({
-            "Index": i,
-            "Time": entry.log_entry.timestamp,
-            "Phase": entry.phase.value,
-            "Risk": entry.risk_level.value,
-            "System": entry.log_entry.subsystem,
-            "Event": entry.log_entry.event
-        })
+    try:
+        for i, entry in enumerate(categorized_entries):
+            if hasattr(entry, 'log_entry') and hasattr(entry, 'phase') and hasattr(entry, 'risk_level'):
+                timeline_data.append({
+                    "Index": i,
+                    "Time": entry.log_entry.timestamp,
+                    "Phase": entry.phase.value,
+                    "Risk": entry.risk_level.value,
+                    "System": entry.log_entry.subsystem,
+                    "Event": entry.log_entry.event
+                })
+    except Exception as e:
+        st.error(f"Error creating timeline: {e}")
+        return px.scatter(title="Phase Timeline - Error")
+    
+    if not timeline_data:
+        return px.scatter(title="Phase Timeline - No Valid Data")
     
     df = pd.DataFrame(timeline_data)
     
@@ -110,19 +132,31 @@ def create_phase_timeline(categorized_entries):
 
 def create_system_activity_chart(categorized_entries):
     """Create a chart showing activity by subsystem"""
+    if not categorized_entries:
+        # Return empty chart if no data
+        return px.bar(title="Activity by Subsystem - No Data")
+    
     system_counts = {}
     
-    for entry in categorized_entries:
-        system = entry.log_entry.subsystem
-        if system not in system_counts:
-            system_counts[system] = {"Green": 0, "Yellow": 0, "Red": 0}
-        
-        if entry.risk_level == RiskLevel.GREEN:
-            system_counts[system]["Green"] += 1
-        elif entry.risk_level == RiskLevel.YELLOW:
-            system_counts[system]["Yellow"] += 1
-        elif entry.risk_level == RiskLevel.RED:
-            system_counts[system]["Red"] += 1
+    try:
+        for entry in categorized_entries:
+            if hasattr(entry, 'log_entry') and hasattr(entry, 'risk_level'):
+                system = entry.log_entry.subsystem
+                if system not in system_counts:
+                    system_counts[system] = {"Green": 0, "Yellow": 0, "Red": 0}
+                
+                if entry.risk_level == RiskLevel.GREEN:
+                    system_counts[system]["Green"] += 1
+                elif entry.risk_level == RiskLevel.YELLOW:
+                    system_counts[system]["Yellow"] += 1
+                elif entry.risk_level == RiskLevel.RED:
+                    system_counts[system]["Red"] += 1
+    except Exception as e:
+        st.error(f"Error creating system activity chart: {e}")
+        return px.bar(title="Activity by Subsystem - Error")
+    
+    if not system_counts:
+        return px.bar(title="Activity by Subsystem - No Valid Data")
     
     # Convert to DataFrame for plotting
     chart_data = []
@@ -237,8 +271,12 @@ def main():
                             results = system.analyze_log_file(tmp_file_path)
                             
                             if not results.get('error'):
-                                # Convert for compatibility with existing UI
-                                st.session_state.log_data = results  # Store full results
+                                # Extract categorized entries for UI compatibility
+                                categorized_entries = results.get('categorized_entries', [])
+                                st.session_state.log_data = categorized_entries  # Store categorized entries
+                                st.session_state.production_results = results  # Store full results for reference
+                                
+                                # Create summary object for UI compatibility
                                 st.session_state.summary = type('Summary', (), {
                                     'overall_status': '✅ Production Analysis Complete',
                                     'timeline_summary': results.get('narrative', 'Analysis completed successfully'),
@@ -313,23 +351,24 @@ def main():
         
         with status_col2:
             # Quick stats
-            if PRODUCTION_MODE and isinstance(categorized_entries, dict):
-                # Production mode with full results
-                total_entries = categorized_entries.get('total_entries', 0)
-                processing_time = categorized_entries.get('processing_time', 0)
-                entries_per_sec = categorized_entries.get('performance_metrics', {}).get('entries_per_second', 0)
+            if PRODUCTION_MODE and hasattr(st.session_state, 'production_results') and st.session_state.production_results:
+                # Production mode with enhanced metrics
+                prod_results = st.session_state.production_results
+                total_entries = prod_results.get('total_entries', 0)
+                processing_time = prod_results.get('processing_time', 0)
+                entries_per_sec = prod_results.get('performance_metrics', {}).get('entries_per_second', 0)
                 
                 col1, col2, col3 = st.columns(3)
                 col1.metric("Total Events", total_entries)
                 col2.metric("Processing Time", f"{processing_time:.2f}s")
                 col3.metric("Speed", f"{entries_per_sec:.0f} entries/sec")
             else:
-                # Basic mode
+                # Basic mode or fallback
                 total_entries = len(categorized_entries) if hasattr(categorized_entries, '__len__') else 0
                 error_count = 0
                 warning_count = 0
                 
-                if hasattr(categorized_entries, '__iter__'):
+                if hasattr(categorized_entries, '__iter__') and categorized_entries:
                     try:
                         error_count = sum(1 for e in categorized_entries if hasattr(e, 'risk_level') and e.risk_level == RiskLevel.RED)
                         warning_count = sum(1 for e in categorized_entries if hasattr(e, 'risk_level') and e.risk_level == RiskLevel.YELLOW)
@@ -387,19 +426,30 @@ def main():
         
         with tab4:
             # Detailed table
-            table_data = []
-            for entry in categorized_entries:
-                table_data.append({
-                    "Time": entry.log_entry.timestamp,
-                    "System": entry.log_entry.subsystem,
-                    "Phase": entry.phase.value,
-                    "Risk": entry.risk_level.value,
-                    "Event": entry.log_entry.event,
-                    "Explanation": entry.explanation
-                })
-            
-            df = pd.DataFrame(table_data)
-            st.dataframe(df, use_container_width=True)
+            if not categorized_entries:
+                st.info("No data available for detailed table.")
+            else:
+                table_data = []
+                try:
+                    for entry in categorized_entries:
+                        if hasattr(entry, 'log_entry') and hasattr(entry, 'phase') and hasattr(entry, 'risk_level'):
+                            table_data.append({
+                                "Time": entry.log_entry.timestamp,
+                                "System": entry.log_entry.subsystem,
+                                "Phase": entry.phase.value,
+                                "Risk": entry.risk_level.value,
+                                "Event": entry.log_entry.event,
+                                "Explanation": getattr(entry, 'explanation', 'No explanation available')
+                            })
+                    
+                    if table_data:
+                        df = pd.DataFrame(table_data)
+                        st.dataframe(df, use_container_width=True)
+                    else:
+                        st.info("No valid entries found for detailed table.")
+                
+                except Exception as e:
+                    st.error(f"Error creating detailed table: {e}")
         
         # Export options
         st.header("📥 Export")

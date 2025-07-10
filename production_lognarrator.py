@@ -165,6 +165,7 @@ class ProductionLogNarrator:
                 'categorization_metrics': categorization_metrics,
                 'summary': summary,
                 'narrative': narrative,
+                'categorized_entries': categorized_entries,  # Add the actual categorized entries for UI
                 
                 # Enhanced analysis
                 'temporal_analysis': temporal_summary,
