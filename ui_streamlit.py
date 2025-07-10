@@ -12,10 +12,16 @@ from io import StringIO
 import os
 from datetime import datetime
 
-# Import our modules
-from parser import LogParser
-from categorizer import LogCategorizer, Phase, RiskLevel
-from summarizer import LogSummarizer
+# Import our modules - try production first
+try:
+    from production_lognarrator import ProductionLogNarrator
+    from database_manager import get_database_manager
+    PRODUCTION_MODE = True
+except ImportError:
+    from parser import LogParser
+    from categorizer import LogCategorizer, Phase, RiskLevel
+    from summarizer import LogSummarizer
+    PRODUCTION_MODE = False
 
 
 def init_session_state():
@@ -156,7 +162,12 @@ def main():
     
     # Header
     st.title("🤖 LogNarrator AI")
-    st.subheader("Transform raw machine logs into readable summaries")
+    if PRODUCTION_MODE:
+        st.success("🚀 **Production System Active** - Enhanced capabilities enabled")
+        st.subheader("Enterprise-grade log analysis with ML-powered insights")
+    else:
+        st.warning("⚠️ **Basic Mode** - Some features limited")
+        st.subheader("Transform raw machine logs into readable summaries")
     
     # Sidebar for configuration
     st.sidebar.header("Configuration")
@@ -208,30 +219,58 @@ def main():
     # Analysis button
     if st.sidebar.button("🔍 Analyze Logs", type="primary"):
         if log_text.strip():
-            with st.spinner("Analyzing logs..."):
-                # Initialize components
-                parser = LogParser()
-                categorizer = LogCategorizer()
-                summarizer = LogSummarizer(api_key if api_key else None)
+            with st.spinner("🤖 Running analysis..."):
+                try:
+                    if PRODUCTION_MODE:
+                        # Use production system
+                        import tempfile
+                        with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.log') as tmp_file:
+                            tmp_file.write(log_text)
+                            tmp_file_path = tmp_file.name
+                        
+                        try:
+                            system = ProductionLogNarrator()
+                            results = system.analyze_log_file(tmp_file_path)
+                            
+                            if not results.get('error'):
+                                # Convert for compatibility with existing UI
+                                st.session_state.log_data = results  # Store full results
+                                st.session_state.summary = type('Summary', (), {
+                                    'overall_status': '✅ Production Analysis Complete',
+                                    'timeline_summary': results.get('narrative', 'Analysis completed successfully'),
+                                    'key_events': [f"Processed {results.get('total_entries', 0)} entries in {results.get('processing_time', 0):.2f}s"],
+                                    'risk_assessment': f"Risk Distribution: {results.get('risk_analysis', {}).get('distribution', {})}",
+                                    'recommendations': [f"Processing speed: {results.get('performance_metrics', {}).get('entries_per_second', 0):.1f} entries/sec"],
+                                    'technical_details': f"Database session: {results.get('session_id', 'N/A')}\nFormat detected: {results.get('parsing_metrics', {}).get('format_detected', 'Unknown')}"
+                                })()
+                                st.session_state.analysis_complete = True
+                                st.sidebar.success("✅ Production analysis complete!")
+                            else:
+                                st.sidebar.error(f"❌ Analysis failed: {results.get('error_message')}")
+                        finally:
+                            os.unlink(tmp_file_path)
+                    
+                    else:
+                        # Use basic system
+                        parser = LogParser()
+                        categorizer = LogCategorizer()
+                        summarizer = LogSummarizer(api_key if api_key else None)
+                        
+                        entries = parser.parse_text(log_text)
+                        
+                        if entries:
+                            categorized = categorizer.categorize_log_sequence(entries)
+                            summary = summarizer.generate_summary(categorized)
+                            
+                            st.session_state.log_data = categorized
+                            st.session_state.summary = summary
+                            st.session_state.analysis_complete = True
+                            st.sidebar.success("✅ Basic analysis complete!")
+                        else:
+                            st.sidebar.error("❌ No valid log entries found")
                 
-                # Parse logs
-                entries = parser.parse_text(log_text)
-                
-                if entries:
-                    # Categorize entries
-                    categorized = categorizer.categorize_log_sequence(entries)
-                    
-                    # Generate summary
-                    summary = summarizer.generate_summary(categorized)
-                    
-                    # Store in session state
-                    st.session_state.log_data = categorized
-                    st.session_state.summary = summary
-                    st.session_state.analysis_complete = True
-                    
-                    st.sidebar.success("✅ Analysis complete!")
-                else:
-                    st.sidebar.error("❌ No valid log entries found")
+                except Exception as e:
+                    st.sidebar.error(f"❌ Analysis error: {e}")
         else:
             st.sidebar.warning("⚠️ Please provide log text")
     
@@ -250,14 +289,33 @@ def main():
         
         with status_col2:
             # Quick stats
-            total_entries = len(categorized_entries)
-            error_count = sum(1 for e in categorized_entries if e.risk_level == RiskLevel.RED)
-            warning_count = sum(1 for e in categorized_entries if e.risk_level == RiskLevel.YELLOW)
-            
-            col1, col2, col3 = st.columns(3)
-            col1.metric("Total Events", total_entries)
-            col2.metric("Errors", error_count)
-            col3.metric("Warnings", warning_count)
+            if PRODUCTION_MODE and isinstance(categorized_entries, dict):
+                # Production mode with full results
+                total_entries = categorized_entries.get('total_entries', 0)
+                processing_time = categorized_entries.get('processing_time', 0)
+                entries_per_sec = categorized_entries.get('performance_metrics', {}).get('entries_per_second', 0)
+                
+                col1, col2, col3 = st.columns(3)
+                col1.metric("Total Events", total_entries)
+                col2.metric("Processing Time", f"{processing_time:.2f}s")
+                col3.metric("Speed", f"{entries_per_sec:.0f} entries/sec")
+            else:
+                # Basic mode
+                total_entries = len(categorized_entries) if hasattr(categorized_entries, '__len__') else 0
+                error_count = 0
+                warning_count = 0
+                
+                if hasattr(categorized_entries, '__iter__'):
+                    try:
+                        error_count = sum(1 for e in categorized_entries if hasattr(e, 'risk_level') and e.risk_level == RiskLevel.RED)
+                        warning_count = sum(1 for e in categorized_entries if hasattr(e, 'risk_level') and e.risk_level == RiskLevel.YELLOW)
+                    except:
+                        pass
+                
+                col1, col2, col3 = st.columns(3)
+                col1.metric("Total Events", total_entries)
+                col2.metric("Errors", error_count)
+                col3.metric("Warnings", warning_count)
         
         # Timeline Summary
         st.header("📖 Timeline Summary")
