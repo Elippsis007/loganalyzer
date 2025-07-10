@@ -1,18 +1,12 @@
-# Core dependencies for LogNarrator AI
-anthropic>=0.7.0
-streamlit>=1.28.0
+# Basic LogNarrator AI Requirements
+# Core dependencies
 pandas>=1.5.0
+numpy>=1.21.0
 python-dateutil>=2.8.0
-typer>=0.9.0
-rich>=13.0.0
-plotly>=5.0.0
 
-# Optional production dependencies (for enhanced features)
-# If these are available, production mode will activate automatically
-scipy>=1.9.0
-scikit-learn>=1.1.0
-PyYAML>=6.0
-matplotlib>=3.5.0
+# Web Interface
+streamlit>=1.15.0
+plotly>=5.11.0
 
-# Note: Production components will gracefully fall back to basic mode
-# if any dependencies are missing 
+# Optional: AI Integration (if API key available)
+# anthropic>=0.3.0 
