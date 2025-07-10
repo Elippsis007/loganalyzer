@@ -92,9 +92,7 @@ class DatabaseManager:
     
     def __init__(self, db_path: str = "lognarrator_production.db"):
         self.db_path = db_path
-        self.connection_pool = []
-        self.pool_lock = threading.Lock()
-        self.max_connections = 10
+        self._thread_local = threading.local()
         
         # Initialize database schema
         self._init_database()
@@ -282,30 +280,25 @@ class DatabaseManager:
     
     @contextmanager
     def get_connection(self):
-        """Get database connection from pool"""
-        conn = None
+        """Get thread-local database connection"""
+        # Check if we already have a connection for this thread
+        if not hasattr(self._thread_local, 'connection'):
+            # Create a new connection for this thread
+            self._thread_local.connection = sqlite3.connect(
+                self.db_path, 
+                timeout=30.0,
+                check_same_thread=False  # Allow connection to be used across threads
+            )
+            self._thread_local.connection.row_factory = sqlite3.Row
+        
+        conn = self._thread_local.connection
+        
         try:
-            with self.pool_lock:
-                if self.connection_pool:
-                    conn = self.connection_pool.pop()
-                else:
-                    conn = sqlite3.connect(self.db_path, timeout=30.0)
-                    conn.row_factory = sqlite3.Row
-            
             yield conn
-            
         except Exception as e:
-            if conn:
-                conn.rollback()
+            conn.rollback()
             logger.error(f"Database error: {e}")
             raise
-        finally:
-            if conn:
-                with self.pool_lock:
-                    if len(self.connection_pool) < self.max_connections:
-                        self.connection_pool.append(conn)
-                    else:
-                        conn.close()
     
     def store_analysis_session(self, analysis_data: Dict, entries_data: List[Dict]) -> int:
         """Store complete analysis session with all entries"""
@@ -869,13 +862,16 @@ class DatabaseManager:
             logger.info(f"Exported analysis data to {output_path}")
     
     def close(self):
-        """Close all database connections"""
-        with self.pool_lock:
-            for conn in self.connection_pool:
-                conn.close()
-            self.connection_pool.clear()
-        
-        logger.info("Database manager closed")
+        """Close thread-local database connection"""
+        if hasattr(self._thread_local, 'connection'):
+            try:
+                self._thread_local.connection.close()
+                del self._thread_local.connection
+                logger.info("Database connection closed for current thread")
+            except Exception as e:
+                logger.warning(f"Error closing database connection: {e}")
+        else:
+            logger.info("No database connection to close for current thread")
 
 
 # Global database manager instance

@@ -144,7 +144,7 @@ class ProductionLogCategorizer:
         
     def _init_database(self):
         """Initialize SQLite database for pattern storage and learning"""
-        with sqlite3.connect(self.db_path) as conn:
+        with sqlite3.connect(self.db_path, check_same_thread=False) as conn:
             conn.execute('''
                 CREATE TABLE IF NOT EXISTS pattern_weights (
                     id INTEGER PRIMARY KEY,
@@ -260,7 +260,7 @@ class ProductionLogCategorizer:
     def _load_pattern_weights(self) -> Dict[str, PatternWeight]:
         """Load learned pattern weights from database"""
         weights = {}
-        with sqlite3.connect(self.db_path) as conn:
+        with sqlite3.connect(self.db_path, check_same_thread=False) as conn:
             cursor = conn.execute('''
                 SELECT pattern, phase, risk_level, weight, success_count, total_count, last_updated
                 FROM pattern_weights
@@ -496,7 +496,7 @@ class ProductionLogCategorizer:
             return 0.1
         
         # Get historical accuracy for this subsystem
-        with sqlite3.connect(self.db_path) as conn:
+        with sqlite3.connect(self.db_path, check_same_thread=False) as conn:
             cursor = conn.execute('''
                 SELECT COUNT(*) as total, 
                        COUNT(CASE WHEN actual_phase IS NOT NULL THEN 1 END) as correct
@@ -592,7 +592,7 @@ class ProductionLogCategorizer:
         simple_pattern = re.sub(r'\d+', 'NUM', entry.event.lower())
         simple_pattern = re.sub(r'[^\w\s]', '', simple_pattern)[:50]  # Limit length
         
-        with sqlite3.connect(self.db_path) as conn:
+        with sqlite3.connect(self.db_path, check_same_thread=False) as conn:
             cursor = conn.execute('''
                 SELECT COUNT(*) as total,
                        COUNT(CASE WHEN user_feedback = 'correct' THEN 1 END) as correct
@@ -748,7 +748,7 @@ class ProductionLogCategorizer:
     
     def _store_categorization_result(self, categorized: ProductionCategorizedLogEntry):
         """Store categorization result for learning"""
-        with sqlite3.connect(self.db_path) as conn:
+        with sqlite3.connect(self.db_path, check_same_thread=False) as conn:
             conn.execute('''
                 INSERT OR REPLACE INTO categorization_history 
                 (entry_hash, timestamp, subsystem, event, predicted_phase, predicted_risk, confidence)
@@ -798,7 +798,7 @@ class ProductionLogCategorizer:
     
     def provide_user_feedback(self, entry_hash: str, correct_phase: str, correct_risk: str):
         """Accept user feedback to improve accuracy"""
-        with sqlite3.connect(self.db_path) as conn:
+        with sqlite3.connect(self.db_path, check_same_thread=False) as conn:
             # Update the categorization history with feedback
             conn.execute('''
                 UPDATE categorization_history 
@@ -832,7 +832,7 @@ class ProductionLogCategorizer:
     
     def get_learning_stats(self) -> Dict:
         """Get statistics about the learning system"""
-        with sqlite3.connect(self.db_path) as conn:
+        with sqlite3.connect(self.db_path, check_same_thread=False) as conn:
             cursor = conn.execute('''
                 SELECT 
                     COUNT(*) as total_predictions,

@@ -195,7 +195,7 @@ class ProductionLogParser:
     
     def _init_parser_database(self):
         """Initialize database for parser metrics and caching"""
-        with sqlite3.connect(self.db_path) as conn:
+        with sqlite3.connect(self.db_path, check_same_thread=False) as conn:
             conn.execute('''
                 CREATE TABLE IF NOT EXISTS parsing_metrics (
                     id INTEGER PRIMARY KEY,
@@ -927,7 +927,7 @@ class ProductionLogParser:
         
         file_hash = hashlib.md5(file_path.encode()).hexdigest()
         
-        with sqlite3.connect(self.db_path) as conn:
+        with sqlite3.connect(self.db_path, check_same_thread=False) as conn:
             conn.execute('''
                 INSERT INTO parsing_metrics 
                 (file_path, file_hash, lines_processed, entries_found, multiline_entries, 
@@ -942,7 +942,7 @@ class ProductionLogParser:
     
     def _update_format_confidence(self, format_name: str, success: bool):
         """Update format detection confidence based on results"""
-        with sqlite3.connect(self.db_path) as conn:
+        with sqlite3.connect(self.db_path, check_same_thread=False) as conn:
             # Get current stats
             cursor = conn.execute('''
                 SELECT success_count, failure_count FROM format_patterns 
@@ -976,7 +976,7 @@ class ProductionLogParser:
     
     def get_parsing_statistics(self) -> Dict:
         """Get comprehensive parsing statistics"""
-        with sqlite3.connect(self.db_path) as conn:
+        with sqlite3.connect(self.db_path, check_same_thread=False) as conn:
             cursor = conn.execute('''
                 SELECT 
                     COUNT(*) as files_processed,
