@@ -428,13 +428,23 @@ class ProductionLogParser:
         line_numbers = [start_index + 1]
         lines_consumed = 1
         
+        # Map multiline_type to LogEntryType
+        type_mapping = {
+            'stack_trace': LogEntryType.STACK_TRACE,
+            'json_start': LogEntryType.JSON_DATA,
+            'xml_start': LogEntryType.XML_DATA,
+            'sql_start': LogEntryType.SQL_QUERY,
+            'config_start': LogEntryType.CONFIGURATION,
+        }
+        mapped_entry_type = type_mapping.get(multiline_type, LogEntryType.MULTI_LINE)
+        
         # Look ahead for continuation lines
         i = start_index + 1
         while i < len(lines):
             line = lines[i]
             
             # Check if this is a continuation
-            if self._is_continuation_line(line, LogEntryType(multiline_type)):
+            if self._is_continuation_line(line, mapped_entry_type):
                 all_lines.append(line)
                 line_numbers.append(i + 1)
                 lines_consumed += 1
@@ -531,26 +541,31 @@ class ProductionLogParser:
         errors = []
         structured_data = None
         metadata = {}
+        final_content_type = LogEntryType.MULTI_LINE  # Default type
         
         try:
             if content_type == 'json_start':
                 structured_data = self._extract_json_data(content)
-                content_type = LogEntryType.JSON_DATA
+                final_content_type = LogEntryType.JSON_DATA
                 
             elif content_type == 'xml_start':
                 structured_data = self._extract_xml_data(content)
-                content_type = LogEntryType.XML_DATA
+                final_content_type = LogEntryType.XML_DATA
                 
             elif content_type == 'stack_trace':
                 structured_data = self._extract_stack_trace_data(content)
-                content_type = LogEntryType.STACK_TRACE
+                final_content_type = LogEntryType.STACK_TRACE
                 
             elif content_type == 'sql_start':
                 structured_data = self._extract_sql_data(content)
-                content_type = LogEntryType.SQL_QUERY
+                final_content_type = LogEntryType.SQL_QUERY
+                
+            elif content_type == 'config_start':
+                # Configuration data - could add structured parsing later
+                final_content_type = LogEntryType.CONFIGURATION
                 
             else:
-                content_type = LogEntryType.MULTI_LINE
+                final_content_type = LogEntryType.MULTI_LINE
                 
         except Exception as e:
             errors.append(f"Parsing error: {str(e)}")
@@ -564,7 +579,7 @@ class ProductionLogParser:
         }
         
         return ParsedContent(
-            content_type=LogEntryType(content_type),
+            content_type=final_content_type,
             raw_content=content,
             structured_data=structured_data,
             metadata=metadata,
