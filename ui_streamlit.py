@@ -23,6 +23,24 @@ try:
 except ImportError:
     PRODUCTION_MODE = False
 
+# Import educational system
+try:
+    from educational_system import (
+        StoryNarrativeEngine, 
+        ContextualEducationSystem, 
+        PatternRecognitionTrainer,
+        LearningLevel,
+        StoryType
+    )
+    from investigation_methodology import (
+        InvestigationMethodologyGuide,
+        InvestigationFramework,
+        InvestigationPhase
+    )
+    EDUCATIONAL_MODE = True
+except ImportError:
+    EDUCATIONAL_MODE = False
+
 # Always import basic components for RiskLevel enum used in visualizations
 try:
     from categorizer import Phase, RiskLevel
@@ -45,6 +63,14 @@ def init_session_state():
         st.session_state.log_data = None
     if 'summary' not in st.session_state:
         st.session_state.summary = None
+    if 'educational_mode' not in st.session_state:
+        st.session_state.educational_mode = False
+    if 'learning_level' not in st.session_state:
+        st.session_state.learning_level = 'beginner'
+    if 'log_story' not in st.session_state:
+        st.session_state.log_story = None
+    if 'training_scenario' not in st.session_state:
+        st.session_state.training_scenario = None
 
 
 def create_risk_pie_chart(categorized_entries):
@@ -209,15 +235,45 @@ def main():
     
     # Header
     st.title("🤖 LogNarrator AI")
-    if PRODUCTION_MODE:
-        st.success("🚀 **Production System Active** - Enhanced capabilities enabled")
-        st.subheader("Enterprise-grade log analysis with ML-powered insights")
-    else:
-        st.warning("⚠️ **Basic Mode** - Some features limited")
-        st.subheader("Transform raw machine logs into readable summaries")
+    
+    # Status indicators
+    header_col1, header_col2 = st.columns([2, 1])
+    with header_col1:
+        if PRODUCTION_MODE:
+            st.success("🚀 **Production System Active** - Enhanced capabilities enabled")
+            st.subheader("Enterprise-grade log analysis with ML-powered insights")
+        else:
+            st.warning("⚠️ **Basic Mode** - Some features limited")
+            st.subheader("Transform raw machine logs into readable summaries")
+    
+    with header_col2:
+        if EDUCATIONAL_MODE and st.session_state.educational_mode:
+            st.success("🎓 **Educational Mode Active**")
+            st.write(f"Learning Level: {st.session_state.learning_level.title()}")
+        elif EDUCATIONAL_MODE:
+            st.info("🎓 Educational Features Available")
+        else:
+            st.warning("🎓 Educational Features Unavailable")
     
     # Sidebar for configuration
     st.sidebar.header("Configuration")
+    
+    # Educational mode toggle
+    if EDUCATIONAL_MODE:
+        st.sidebar.header("🎓 Educational Mode")
+        st.session_state.educational_mode = st.sidebar.checkbox(
+            "Enable Educational Features", 
+            value=st.session_state.educational_mode,
+            help="Enable story-driven explanations and learning features"
+        )
+        
+        if st.session_state.educational_mode:
+            st.session_state.learning_level = st.sidebar.selectbox(
+                "Learning Level",
+                ["beginner", "intermediate", "advanced", "expert"],
+                index=["beginner", "intermediate", "advanced", "expert"].index(st.session_state.learning_level),
+                help="Select your experience level for tailored explanations"
+            )
     
     # API Key input - check environment first, then allow override
     env_api_key = os.environ.get("CLAUDE_API_KEY") or os.environ.get("ANTHROPIC_API_KEY")
@@ -297,6 +353,17 @@ def main():
                                 })()
                                 st.session_state.analysis_complete = True
                                 st.sidebar.success("✅ Production analysis complete!")
+                                
+                                # Generate educational story if enabled
+                                if st.session_state.educational_mode and EDUCATIONAL_MODE:
+                                    try:
+                                        story_engine = StoryNarrativeEngine()
+                                        learning_level = LearningLevel(st.session_state.learning_level.upper())
+                                        story = story_engine.generate_story(categorized_entries, learning_level)
+                                        st.session_state.log_story = story
+                                        st.sidebar.success("✅ Educational story generated!")
+                                    except Exception as story_error:
+                                        st.sidebar.warning(f"⚠️ Educational story generation failed: {story_error}")
                             else:
                                 st.sidebar.error(f"❌ Analysis failed: {results.get('error_message')}")
                         except Exception as prod_error:
@@ -324,6 +391,17 @@ def main():
                                 st.session_state.summary = summary
                                 st.session_state.analysis_complete = True
                                 st.sidebar.success("✅ Basic analysis complete!")
+                                
+                                # Generate educational story if enabled
+                                if st.session_state.educational_mode and EDUCATIONAL_MODE:
+                                    try:
+                                        story_engine = StoryNarrativeEngine()
+                                        learning_level = LearningLevel(st.session_state.learning_level.upper())
+                                        story = story_engine.generate_story(categorized, learning_level)
+                                        st.session_state.log_story = story
+                                        st.sidebar.success("✅ Educational story generated!")
+                                    except Exception as story_error:
+                                        st.sidebar.warning(f"⚠️ Educational story generation failed: {story_error}")
                         finally:
                             try:
                                 os.unlink(tmp_file_path)
@@ -354,6 +432,17 @@ def main():
                             st.session_state.summary = summary
                             st.session_state.analysis_complete = True
                             st.sidebar.success("✅ Basic analysis complete!")
+                            
+                            # Generate educational story if enabled
+                            if st.session_state.educational_mode and EDUCATIONAL_MODE:
+                                try:
+                                    story_engine = StoryNarrativeEngine()
+                                    learning_level = LearningLevel(st.session_state.learning_level.upper())
+                                    story = story_engine.generate_story(categorized, learning_level)
+                                    st.session_state.log_story = story
+                                    st.sidebar.success("✅ Educational story generated!")
+                                except Exception as story_error:
+                                    st.sidebar.warning(f"⚠️ Educational story generation failed: {story_error}")
                         else:
                             st.sidebar.error("❌ No valid log entries found")
                 
@@ -439,7 +528,13 @@ def main():
         st.header("📈 Visualizations")
         
         # Create tabs for different views
-        tab1, tab2, tab3, tab4 = st.tabs(["Risk Distribution", "Phase Timeline", "System Activity", "Detailed Table"])
+        if st.session_state.educational_mode and EDUCATIONAL_MODE:
+            tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+                "Risk Distribution", "Phase Timeline", "System Activity", 
+                "Detailed Table", "📖 Log Story", "🎓 Learning Center"
+            ])
+        else:
+            tab1, tab2, tab3, tab4 = st.tabs(["Risk Distribution", "Phase Timeline", "System Activity", "Detailed Table"])
         
         with tab1:
             st.plotly_chart(create_risk_pie_chart(categorized_entries), use_container_width=True)
@@ -471,11 +566,394 @@ def main():
                     if table_data:
                         df = pd.DataFrame(table_data)
                         st.dataframe(df, use_container_width=True)
+                        
+                        # Add educational context if enabled
+                        if st.session_state.educational_mode and EDUCATIONAL_MODE:
+                            st.subheader("🎓 Educational Context")
+                            st.write("Select a log entry to see detailed educational explanations:")
+                            
+                            # Entry selector
+                            selected_entry_idx = st.selectbox(
+                                "Choose log entry for detailed explanation:",
+                                range(len(categorized_entries)),
+                                format_func=lambda x: f"Entry {x+1}: {categorized_entries[x].log_entry.timestamp} - {categorized_entries[x].log_entry.event[:50]}..."
+                            )
+                            
+                            if selected_entry_idx is not None:
+                                try:
+                                    selected_entry = categorized_entries[selected_entry_idx]
+                                    education_system = ContextualEducationSystem()
+                                    learning_level = LearningLevel(st.session_state.learning_level.upper())
+                                    
+                                    context = education_system.get_contextual_explanation(
+                                        selected_entry.log_entry, 
+                                        learning_level
+                                    )
+                                    
+                                    # Display contextual explanation
+                                    st.write(f"**Pattern: {context.pattern_name}**")
+                                    
+                                    explanation_col1, explanation_col2 = st.columns(2)
+                                    
+                                    with explanation_col1:
+                                        st.write("**What it means:**")
+                                        st.write(context.what_it_means)
+                                        
+                                        st.write("**Why it happens:**")
+                                        st.write(context.why_it_happens)
+                                        
+                                        st.write("**Business impact:**")
+                                        st.write(context.business_impact)
+                                    
+                                    with explanation_col2:
+                                        st.write("**Investigation steps:**")
+                                        for step in context.investigation_steps:
+                                            st.write(f"• {step}")
+                                        
+                                        if context.red_flags:
+                                            st.write("**🚩 Red flags:**")
+                                            for flag in context.red_flags:
+                                                st.write(f"• {flag}")
+                                        
+                                        if context.common_causes:
+                                            st.write("**Common causes:**")
+                                            for cause in context.common_causes:
+                                                st.write(f"• {cause}")
+                                    
+                                    if context.remediation_steps:
+                                        st.write("**Remediation steps:**")
+                                        for step in context.remediation_steps:
+                                            st.write(f"• {step}")
+                                
+                                except Exception as e:
+                                    st.error(f"Error generating educational context: {e}")
                     else:
                         st.info("No valid entries found for detailed table.")
                 
                 except Exception as e:
                     st.error(f"Error creating detailed table: {e}")
+        
+        # Educational tabs (only if educational mode is enabled)
+        if st.session_state.educational_mode and EDUCATIONAL_MODE:
+            with tab5:
+                # Log Story tab
+                if st.session_state.log_story:
+                    story = st.session_state.log_story
+                    
+                    st.header(f"📖 {story.title}")
+                    
+                    # Executive Summary
+                    st.subheader("Executive Summary")
+                    st.info(story.executive_summary)
+                    
+                    # Story Type Badge
+                    st.subheader("Story Type")
+                    story_type_colors = {
+                        "error_cascade": "🔴",
+                        "performance_degradation": "🟡", 
+                        "resource_exhaustion": "🟠",
+                        "security_incident": "🔴",
+                        "normal_operation": "🟢"
+                    }
+                    story_icon = story_type_colors.get(story.story_type.value, "🔵")
+                    st.write(f"{story_icon} **{story.story_type.value.replace('_', ' ').title()}**")
+                    
+                    # Detailed Narrative
+                    st.subheader("What Happened?")
+                    st.write(story.detailed_narrative)
+                    
+                    # Story Segments
+                    st.subheader("Timeline Story")
+                    for i, segment in enumerate(story.segments):
+                        with st.expander(f"⏰ {segment.timestamp.strftime('%H:%M:%S')} - {segment.story_narrative[:50]}..."):
+                            st.write("**What this means:**")
+                            st.write(segment.story_narrative)
+                            
+                            st.write("**Business Impact:**")
+                            st.write(segment.business_impact)
+                            
+                            st.write("**Learning Points:**")
+                            for point in segment.learning_points:
+                                st.write(f"• {point}")
+                            
+                            st.write("**Severity Explanation:**")
+                            st.write(segment.severity_explanation)
+                            
+                            if segment.red_flags:
+                                st.write("**🚩 Red Flags:**")
+                                for flag in segment.red_flags:
+                                    st.write(f"• {flag}")
+                            
+                            if segment.related_patterns:
+                                st.write("**🔗 Related Patterns:**")
+                                for pattern in segment.related_patterns:
+                                    st.write(f"• {pattern}")
+                    
+                    # Lessons Learned
+                    if story.lessons_learned:
+                        st.subheader("📚 Lessons Learned")
+                        for lesson in story.lessons_learned:
+                            st.write(f"• {lesson}")
+                    
+                    # Investigation Methodology
+                    st.subheader("🔍 How to Investigate This Type of Issue")
+                    st.text(story.investigation_methodology)
+                    
+                    # Prevention Tips
+                    if story.prevention_tips:
+                        st.subheader("🛡️ Prevention Tips")
+                        for tip in story.prevention_tips:
+                            st.write(f"• {tip}")
+                    
+                    # Related Case Studies
+                    if story.related_case_studies:
+                        st.subheader("📊 Related Case Studies")
+                        for case_study in story.related_case_studies:
+                            st.write(f"• {case_study}")
+                
+                else:
+                    st.info("No educational story available. Make sure to enable educational mode before analysis.")
+            
+            with tab6:
+                # Learning Center tab
+                st.header("🎓 Learning Center")
+                
+                # Pattern Recognition Training
+                st.subheader("🎯 Pattern Recognition Training")
+                
+                training_col1, training_col2 = st.columns(2)
+                
+                with training_col1:
+                    scenario_type = st.selectbox(
+                        "Choose Training Scenario",
+                        ["connection_timeout", "memory_leak", "performance_degradation"],
+                        format_func=lambda x: x.replace('_', ' ').title()
+                    )
+                
+                with training_col2:
+                    difficulty = st.selectbox(
+                        "Difficulty Level",
+                        ["beginner", "intermediate", "advanced"]
+                    )
+                
+                if st.button("🚀 Start Training Scenario"):
+                    try:
+                        trainer = PatternRecognitionTrainer()
+                        scenario = trainer.create_training_scenario(scenario_type, difficulty)
+                        st.session_state.training_scenario = scenario
+                        st.success("Training scenario loaded!")
+                    except Exception as e:
+                        st.error(f"Error creating training scenario: {e}")
+                
+                # Display training scenario
+                if st.session_state.training_scenario:
+                    scenario = st.session_state.training_scenario
+                    
+                    st.subheader(f"📋 Scenario: {scenario['description']}")
+                    
+                    # Learning Objectives
+                    st.write("**Learning Objectives:**")
+                    for obj in scenario['learning_objectives']:
+                        st.write(f"• {obj}")
+                    
+                    # Sample Logs
+                    st.subheader("📝 Sample Logs")
+                    log_df = pd.DataFrame(scenario['log_entries'])
+                    st.dataframe(log_df, use_container_width=True)
+                    
+                    # Interactive Questions
+                    st.subheader("❓ Questions")
+                    for i, question in enumerate(scenario['questions']):
+                        st.write(f"**Question {i+1}:** {question['question']}")
+                        
+                        if question['type'] == 'multiple_choice':
+                            user_answer = st.radio(
+                                f"Select your answer for Question {i+1}:",
+                                question['options'],
+                                key=f"q_{i}"
+                            )
+                            
+                            if st.button(f"Check Answer {i+1}", key=f"check_{i}"):
+                                if question['options'].index(user_answer) == question['correct_answer']:
+                                    st.success(f"✅ Correct! {question['explanation']}")
+                                else:
+                                    st.error(f"❌ Incorrect. {question['explanation']}")
+                        
+                        elif question['type'] == 'short_answer':
+                            user_answer = st.text_input(f"Your answer for Question {i+1}:", key=f"short_{i}")
+                            
+                            if st.button(f"Check Answer {i+1}", key=f"check_short_{i}"):
+                                if user_answer.lower().strip() == question['correct_answer'].lower().strip():
+                                    st.success(f"✅ Correct! {question['explanation']}")
+                                else:
+                                    st.error(f"❌ Incorrect. The correct answer is: {question['correct_answer']}. {question['explanation']}")
+                    
+                    # Hints
+                    if scenario.get('hints'):
+                        with st.expander("💡 Hints"):
+                            for hint in scenario['hints']:
+                                st.write(f"• {hint}")
+                    
+                    # Expected Patterns
+                    st.subheader("🎯 Patterns to Look For")
+                    for pattern in scenario['expected_patterns']:
+                        st.write(f"• {pattern}")
+                
+                # Investigation Methodology Guide
+                st.subheader("🔍 Investigation Methodology")
+                
+                methodology_guide = InvestigationMethodologyGuide()
+                
+                # Framework Selection
+                method_col1, method_col2 = st.columns(2)
+                
+                with method_col1:
+                    selected_framework = st.selectbox(
+                        "Choose Investigation Framework",
+                        [framework.value for framework in InvestigationFramework],
+                        format_func=lambda x: x.replace('_', ' ').title()
+                    )
+                
+                with method_col2:
+                    investigation_scenario = st.selectbox(
+                        "Investigation Scenario",
+                        ["error_cascade", "performance_degradation", "security_incident", "resource_exhaustion"],
+                        format_func=lambda x: x.replace('_', ' ').title()
+                    )
+                
+                # Display framework guide
+                framework_enum = InvestigationFramework(selected_framework)
+                framework_guide = methodology_guide.get_framework_guide(framework_enum)
+                
+                if framework_guide:
+                    st.write(f"**{framework_guide.get('name', 'Framework')}**")
+                    st.write(framework_guide.get('description', ''))
+                    
+                    if 'questions' in framework_guide:
+                        st.write("**Key Questions to Ask:**")
+                        for category, questions in framework_guide['questions'].items():
+                            st.write(f"*{category}:*")
+                            for question in questions:
+                                st.write(f"  • {question}")
+                    
+                    if 'benefits' in framework_guide:
+                        st.write("**Benefits:**")
+                        for benefit in framework_guide['benefits']:
+                            st.write(f"• {benefit}")
+                    
+                    if 'best_for' in framework_guide:
+                        st.write("**Best For:**")
+                        for use_case in framework_guide['best_for']:
+                            st.write(f"• {use_case}")
+                
+                # Investigation Plan
+                if st.button("📋 Get Investigation Plan"):
+                    try:
+                        plan = methodology_guide.get_investigation_plan(investigation_scenario, framework_enum)
+                        st.session_state.investigation_plan = plan
+                        st.success("Investigation plan generated!")
+                    except Exception as e:
+                        st.error(f"Error generating investigation plan: {e}")
+                
+                # Display investigation plan
+                if hasattr(st.session_state, 'investigation_plan') and st.session_state.investigation_plan:
+                    plan = st.session_state.investigation_plan
+                    
+                    st.subheader(f"📋 Investigation Plan: {plan.scenario_type.replace('_', ' ').title()}")
+                    
+                    # Plan overview
+                    plan_col1, plan_col2 = st.columns(2)
+                    
+                    with plan_col1:
+                        st.write(f"**Estimated Time:** {plan.estimated_time}")
+                        st.write("**Required Skills:**")
+                        for skill in plan.required_skills:
+                            st.write(f"• {skill}")
+                    
+                    with plan_col2:
+                        st.write("**Success Criteria:**")
+                        for criteria in plan.success_criteria:
+                            st.write(f"• {criteria}")
+                    
+                    # Investigation steps
+                    st.write("**Investigation Steps:**")
+                    for i, step in enumerate(plan.steps):
+                        with st.expander(f"Step {i+1}: {step.title}"):
+                            st.write(f"**Phase:** {step.phase.value.replace('_', ' ').title()}")
+                            st.write(f"**Description:** {step.description}")
+                            
+                            st.write("**Questions to Ask:**")
+                            for question in step.questions_to_ask:
+                                st.write(f"• {question}")
+                            
+                            st.write("**What to Look For:**")
+                            for item in step.what_to_look_for:
+                                st.write(f"• {item}")
+                            
+                            st.write("**Tools to Use:**")
+                            for tool in step.tools_to_use:
+                                st.write(f"• {tool}")
+                            
+                            st.write("**Expected Outcomes:**")
+                            for outcome in step.expected_outcomes:
+                                st.write(f"• {outcome}")
+                            
+                            if step.red_flags:
+                                st.write("**🚩 Red Flags:**")
+                                for flag in step.red_flags:
+                                    st.write(f"• {flag}")
+                            
+                            if step.best_practices:
+                                st.write("**📝 Best Practices:**")
+                                for practice in step.best_practices:
+                                    st.write(f"• {practice}")
+                
+                # Investigation Checklist
+                st.subheader("✅ Investigation Checklist")
+                checklist = methodology_guide.get_investigation_checklist(investigation_scenario)
+                
+                st.write(f"**Checklist for {investigation_scenario.replace('_', ' ').title()}:**")
+                for item in checklist:
+                    st.write(item)
+                
+                # Red Flags Guide
+                st.subheader("🚩 Red Flags Guide")
+                red_flags_guide = methodology_guide.get_red_flags_guide()
+                
+                for category, flags in red_flags_guide.items():
+                    st.write(f"**{category.replace('_', ' ').title()}:**")
+                    for flag in flags:
+                        st.write(flag)
+                
+                # Best Practices
+                st.subheader("📝 Best Practices")
+                best_practices_categories = ["general", "data_collection", "analysis", "communication", "follow_up"]
+                
+                selected_category = st.selectbox(
+                    "Choose Best Practices Category",
+                    best_practices_categories,
+                    format_func=lambda x: x.replace('_', ' ').title()
+                )
+                
+                best_practices = methodology_guide.get_best_practices(selected_category)
+                for practice in best_practices:
+                    st.write(f"• {practice}")
+                
+                # Contextual Help
+                st.subheader("🔍 Contextual Help")
+                st.write("Click on any log entry in the detailed table to get contextual explanations!")
+                
+                # Learning Resources
+                st.subheader("📚 Learning Resources")
+                resources = [
+                    "**Log Levels Guide**: Understanding ERROR, WARN, INFO, DEBUG",
+                    "**Pattern Recognition**: Common patterns in system logs",
+                    "**Investigation Methodology**: The 5 W's framework for log analysis",
+                    "**Business Impact**: Translating technical issues to business terms"
+                ]
+                
+                for resource in resources:
+                    st.write(f"• {resource}")
         
         # Export options
         st.header("📥 Export")
