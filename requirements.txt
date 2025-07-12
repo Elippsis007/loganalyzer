@@ -1,12 +1,27 @@
-# Basic LogNarrator AI Requirements
+# Production LogNarrator AI Requirements
 # Core dependencies
 pandas>=1.5.0
 numpy>=1.21.0
 python-dateutil>=2.8.0
+pytz>=2022.1
+
+# Machine Learning and Statistics
+scipy>=1.9.0
+
+# Configuration Management
+PyYAML>=6.0
+
+# Export Capabilities
+reportlab>=3.6.0
+xlsxwriter>=3.0.0
+matplotlib>=3.5.0
 
 # Web Interface
 streamlit>=1.15.0
 plotly>=5.11.0
+
+# Performance and Monitoring
+psutil>=5.9.0
 
 # Optional: AI Integration (if API key available)
 # anthropic>=0.3.0 
